@@ -1,94 +1,80 @@
-# Wii U Rich Presence Plugin - Database
-Image database for the [Wii U Rich Presence plugin](https://github.com/FlamingNineteen/RichPresenceWUPS).
+# Wii U Rich Presence — VC Injection Add-on Database
 
-# Contribute
-If there are games that you would like to display on your profile, but are not on this repository, you can help add them! To add games, you will need a <ins>GitHub account</ins>. It is also recommended that you install either [ftpiiu](https://github.com/wiiu-env/ftpiiu_plugin) or [WiiUDownloader](https://github.com/Xpl0itU/WiiUDownloader), and have an image converter like [ImageMagick](https://www.imagemagick.org).
-
-## Invalid Games
-Firstly, you should know what games or apps **do not** go in this repository. The following are not suitable for this plugin:
-
-- Virtual Console injects
-  - Regular Virtual Console games are allowed
-- Applets (Friend List, Browser, Amiibo Settings, etc.)
-- vWii and any Wii games
-  - Includes Gamecube games from Nintendont
-- Homebrew applications
-- Games already in this repository
-
-## Setup
-To start, clone or fork this repository.
-
-This tutorial will cover three methods of getting game information for the repository:
-
-- **Use the Python scripts:** The easiest way to add games is by using the premade Python scripts in this repository, specifically `ftp.py`. This script requires that you have a Wii U with [ftpiiu](https://github.com/wiiu-env/ftpiiu_plugin). It also requires that the game that you are adding is a digital game, not a physical game.
-- **Downloading the game files:** Uses [WiiUDownloader](https://github.com/Xpl0itU/WiiUDownloader) to obtain the necessary files. Great if you don't have a Wii U or a digital copy of the game that you're adding.
-- **Manually copying from FTP server:** This method is the same as the Python scripts, just manually. Requires a Wii U with [ftpiiu](https://github.com/wiiu-env/ftpiiu_plugin) and a way for you to connect to and transfer files from an FTP server. It also requires that the game that you are adding is a digital game, not a physical game. Not recommended, as it is very tedious to find the game(s) you are looking for.
-
-## Using the Python Scripts
-> [!NOTE]
-> This method involves accessing your system's NAND or USB.
-
-Turn on your Wii U, and in the plugin configuration settings, make sure ftpiiu is installed and enabled. Make sure "Allow access to system files" is set to true. Save the configurations.
-
-Run the `ftp.py` Python script in your cloned or forked repository. Enter the IP address of your Wii U (shown in ftpiiu's configuration settings). The Python script will automatically go through your system, downloading only new icons into the `downloads` folder and adding the games to the `titles.json` file.
+Community fork of [FlamingNineteen/RichPresenceWUPS-DB](https://github.com/FlamingNineteen/RichPresenceWUPS-DB), intended to keep the original Wii U game image database **and** provide optional cover art for custom Virtual Console (VC) injections made with tools such as Cafe Inject Studio or UWUVCI.
 
 > [!IMPORTANT]
-> This method may also unintentionally transfer Virtual Console injects. Remove any instances of these in the `titles.json` file as well as their icons.
+> **Unofficial project.** Not affiliated with, endorsed by, or maintained by FlamingNineteen or the Wii U Rich Presence developers. The upstream database deliberately **does not accept VC injections**. Additions for injections belong in **this fork**, not in upstream pull requests.
 
-That's it for getting the media! You can skip down to [formatting the icons](#formatting-the-icons).
+## Current status
 
-## Using WiiUDownloader
-In WiiUDownloader, you can download decrypted game contents. Select the game(s) you want to add, then toggle "Decrypt contents" before downloading. **Be aware of the game region(s).**
+- ✅ Fork of the original database; original `titles.json` and `icons/` retained.
+- ✅ Existing official Wii U and official Virtual Console entries preserved.
+- 🧪 Custom VC injection additions are **planned / experimental**. No injection is automatically supported merely because this fork exists.
+- 🧪 Cafe Inject Studio automatic publishing is **not yet implemented**.
+- ✅ No Wii U plugin modification is expected solely to select a different image database, but injection-name detection still needs real-device testing.
 
-Once the contents are decrypted, open the `meta` folder. `iconTex.tga` is the game's icon. I recommend saving the icons you get in a new folder in your cloned repository, `downloads`.
+## How the database works
 
-Additionally, there should be a `meta.xml` file in the `meta` folder. In that file, find the `longname_en` tag. This is the name the plugin uses to match images.
+The [Wii U Rich Presence plugin](https://github.com/FlamingNineteen/RichPresenceWUPS) communicates with its companion application on your computer, which uses the game title to look up an icon.
 
-In `titles.json`, add a new key with the same name as the `longname_en` tag. Here is an example for LEGO® Marvel Super Heroes:
+- `titles.json`: maps the game's **exact reported title** to a filename.
+- `icons/`: contains the referenced JPEG images.
+- Entries for unofficial injections should use a distinctive filename and must not overwrite an existing game's icon.
+
+Example (illustrative only — not an included game):
+```json
+{
+  "Example VC Injection": "vc_example.jpg"
+}
 ```
-"LEGO® Marvel Superheroes":"iconTex.tga"
-```
-That's it for getting the media! You can skip down to [formatting the icons](#formatting-the-icons).
+This entry requires `icons/vc_example.jpg` to exist. The key must match the title actually received by WURP; the title shown in the injection builder may not always be identical.
 
-## Manually copying from FTP server
-> [!IMPORTANT]
-> This method is difficult and not recommended unless you know what you're doing.
+## Using this fork with WURP
 
-> [!NOTE]
-> This method involves accessing your system's NAND or USB.
+Install the official Wii U plugin and the WURP desktop companion according to the [upstream installation instructions](https://github.com/FlamingNineteen/RichPresenceWUPS#installation). With Discord running, start the desktop companion using its supported `repo` argument (the documented `--repo` form also exists):
 
-Turn on your Wii U, and in the plugin configuration settings, make sure ftpiiu is installed and enabled. Make sure "Allow access to system files" is set to true. Save the configurations.
-
-Connect to your Wii U's FTP server. The server information can be found in ftpiiu's configuration settings. Then enter `/storage_mlc/usr/title` for games stored on NAND, or `/storage_usb/usr/title` for games stored on a USB. Enter the hexidecimal directories until you see a `meta` directory.
-
-`iconTex.tga` is the game's icon. I recommend saving the icons you get in a new folder in your cloned repository, `downloads`.
-
-Additionally, there should be a `meta.xml` file in the `meta` folder. In that file, find the `longname_en` tag. This is the name the plugin uses to match images.
-
-In `titles.json`, add a new key with the same name as the `longname_en` tag. Here is an example for LEGO® Marvel Super Heroes:
-```
-"LEGO® Marvel Superheroes":"iconTex.tga"
-```
-Note that you will probably have to look through the `meta.xml` files of many games before you find the game(s) you are looking for.
-
-## Formatting the Icons
-The Python script `to_jpg.py` automatically converts and formats the images in the `downloads` directory into the `icons` directory of your cloned repository for you. However, it requires [ImageMagick](https://www.imagemagick.org).
-
-You can also use any other program to convert the icons to JPG files. **Make sure to upscale them to 512x512**.
-
-Likely right now your icons are named stuff like `iconTex (2).jpg`. Renaming them helps find icons quicker. Open `titles.json`, and edit the values of the keys for the added games. The image names should be short, perhaps abbreviated if the name is long. Here is an example for LEGO® Marvel Super Heroes:
-```
-"LEGO® Marvel Superheroes":"legomsh.jpg"
-```
-Once you've changed the keys, rename each image icon accordingly.
-
-## Create a Pull Request
-Once you are satisfied with the games you've added, you can double check that they will display correctly before creating a pull request. 
-
-You can execute program using your repository to test out the images. In a command prompt, add `repo [USERNAME]/[REPOSITORY]` as arguments. For example:
-```
-WURP-Windows repo FlamingNineteen/RichPresenceWUPS-DB
-python3 discord-script.py repo FlamingNineteen/RichPresenceWUPS-DB
+```powershell
+.\WURP-Windows.exe repo Eitan1414/RichPresence-WUPS-DB-UWUVCI-VC-Addon-
 ```
 
-If all looks good, you can create a pull request to the original repository so the icons can get added for everyone to use.
+Or for the Python companion:
+```bash
+python3 discord-script.py repo Eitan1414/RichPresence-WUPS-DB-UWUVCI-VC-Addon-
+```
+
+These commands **select this fork as the image repository**. They do not install VC injections, add games automatically, or guarantee that every custom title will be recognized. If an injection does not display, inspect the companion application's reported game title first.
+
+## Adding a VC injection manually
+
+1. Create your own VC injection using legally obtained game content.
+2. Locate the injection's `meta/meta.xml`; read its `longname_en` value. If available, compare this with the title reported by the running desktop companion.
+3. Create a **512 × 512 pixel JPEG** of its icon, for example `icons/vc_example.jpg`. Avoid reusing an existing image filename.
+4. Add a mapping to `titles.json`: `"Exact Game Name": "vc_example.jpg"`. Keep the JSON valid and existing mappings intact.
+5. Commit both the JSON change and the JPEG to **this repository**, then restart WURP and test it.
+
+Names must match exactly, including punctuation, case, spaces, and special characters.
+
+## Planned Cafe Inject Studio integration
+
+The intended workflow is:
+
+1. Read the injection's title and icon from its metadata.
+2. Preview/edit the proposed title and cover art.
+3. Detect an existing mapping or icon collision.
+4. Add or update the entry in a local copy of `titles.json` and save a 512 × 512 JPEG.
+5. Publish those changes to this fork through an explicit, authenticated GitHub workflow.
+
+**Do not embed GitHub personal access tokens in distributed installers or upload private game files.** Only metadata and cover art should be published.
+
+## Compatibility and limitations
+
+- Official Wii U/VC titles: existing upstream entries are retained.
+- Custom Wii U-format VC injections: intended target; detection is **unverified until tested**.
+- Wii games launched in vWii, GameCube titles through Nintendont, homebrew and system applets: no expanded support is promised by this database fork.
+- Name collisions: two different injections with the same reported title will share one mapping. Solving this requires further design and possibly changes outside the database.
+
+## Maintaining the fork
+
+Keep additions here, and periodically sync changes from [the upstream repository](https://github.com/FlamingNineteen/RichPresenceWUPS-DB). Review merge conflicts in `titles.json` carefully so that neither upstream mappings nor your own injections get lost.
+
+This repository retains upstream material and credits its original maintainers. See the [upstream project](https://github.com/FlamingNineteen/RichPresenceWUPS-DB) for its original contribution documentation.
