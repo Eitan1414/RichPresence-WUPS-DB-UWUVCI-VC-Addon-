@@ -4,7 +4,6 @@
 Run from the repository root:
     python tools/validate_database.py
 """
-from collections import Counter
 from pathlib import Path
 import json
 import sys
@@ -45,7 +44,7 @@ def main():
         if not isinstance(icon, str) or not icon.lower().endswith(".jpg"):
             problems.append(f"Invalid JPEG filename for {title!r}: {icon!r}")
             continue
-        if Path(icon).name != icon or "/" in icon or "\\\\" in icon:
+        if Path(icon).name != icon or "/" in icon or chr(92) in icon:
             problems.append(f"Unsafe icon filename for {title!r}: {icon!r}")
             continue
         if not (ICONS / icon).is_file():
